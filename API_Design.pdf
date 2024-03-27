@@ -1,0 +1,112 @@
+Description:
+
+The LinkedIn Posts API allows users to perform CRUD (Create, Read, Update, Delete) operations on LinkedIn posts. Users can retrieve posts, create new posts, update existing posts, and delete posts using this API.
+
+Base URL:
+
+http://127.0.0.1:8000
+
+Endpoints:
+
+Get All Posts
+URL: /linkedinposts
+Method: GET
+Description: Retrieves all LinkedIn posts with pagination.
+Parameters:
+page (int, optional): The page number to retrieve (default 1).
+page_size (int, optional): The number of posts per page (default 10).
+Response:
+data (list): List of LinkedIn post details.
+
+Get Latest Post
+URL: /linkedinposts/latest
+Method: GET
+Description: Retrieves the latest LinkedIn post.
+Response:
+post_detail (dict): Details of the latest post.
+
+Get Post by ID
+URL: /linkedinposts/{id}
+Method: GET
+Description: Retrieves a LinkedIn post by its ID.
+Parameters:
+id (int): The ID of the post to retrieve.
+Response:
+post_detail (dict): Details of the requested post.
+
+Create a New Post
+URL: /linkedinposts
+Method: POST
+Description: Creates a new LinkedIn post.
+Request Body:
+title (str): The title of the post.
+content (str): The content of the post.
+category (str): The category of the post.
+published (bool, optional): Indicates if the post is published (default True).
+Response:
+data (dict): Details of the created post.
+
+Update a Post by ID
+URL: /linkedinposts/{id}
+Method: PUT
+Description: Updates a LinkedIn post by its ID.
+Parameters:
+id (int): The ID of the post to update.
+Request Body:
+title (str): The updated title of the post.
+content (str): The updated content of the post.
+category (str): The updated category of the post.
+published (bool): The updated published status of the post.
+Response:
+message (str): A message indicating the success of the update.
+post_details (dict): Details of the updated post.
+
+Update All Posts
+URL: /linkedinposts
+Method: PUT
+Description: Updates all LinkedIn posts with the same details.
+Request Body:
+title (str): The updated title for all posts.
+content (str): The updated content for all posts.
+category (str): The updated category for all posts.
+published (bool): The updated published status for all posts.
+Response:
+message (str): A message indicating the success of the update.
+Updated Posts (list): Details of all updated posts.
+
+Delete a Post by ID
+URL: /linkedinposts/{id}
+Method: DELETE
+Description: Deletes a LinkedIn post by its ID.
+Parameters:
+id (int): The ID of the post to delete.
+Response:
+message (str): A message indicating the success of the deletion.
+
+Delete All Posts
+URL: /linkedinposts
+Method: DELETE
+Description: Deletes all LinkedIn posts.
+Response:
+message (str): A message indicating the success of the deletion.
+
+Expected Response Format:
+
+For successful requests, the API returns a JSON response with appropriate status codes and data.
+For error cases, the API returns a JSON response with an appropriate error message and status code.
+
+Authorization:
+
+The API currently does not require authorization for any endpoints. All endpoints are publicly accessible.
+
+Rate Limiting:
+
+The API currently does not have rate limiting implemented. Clients can make requests to the API without any restrictions.
+
+Note:
+
+All request and response bodies are in JSON format.
+Error responses contain detailed error messages for better debugging.
+APIs use appropriate HTTP status codes for successful and error responses.
+FastAPI ensures to handle edge cases such as empty data or invalid input parameters.
+
