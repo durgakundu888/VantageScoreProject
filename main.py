@@ -58,6 +58,13 @@ def paginate_posts(page: int = 1, page_size: int = 10):
 
 @app.post("/user/signup", tags=["user"])
 def user_signup(user : User = Body(default=None)):
+    """
+    Signup new user
+    Parameters:
+    user (User): The details of the new user to signup.
+    Returns:
+    access_token (json): The bearer token for authorization
+    """
     users.append(user)
     return signJWT(user.email)
 
@@ -69,6 +76,13 @@ def check_user(data: UserLogin):
 
 @app.post("/user/login", tags=["user"])
 def user_login(user: UserLogin = Body(default=None)):
+    """
+    Login and authenticate user
+    Parameters:
+    user (UserLogin): The details of the user to login.
+    Returns:
+    access_token (json): The bearer token for authorization
+    """
     if check_user(user):
         return signJWT(user.email)
     else:
