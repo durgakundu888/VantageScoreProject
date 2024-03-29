@@ -78,6 +78,18 @@ def test_get_post_by_id():
     assert response3.status_code == 200
     assert response3.json() == {'post_detail': {'title': 'Vacation on the beach', 'content': "I just got back from vacation and I'm so stressed.", 'category': 'Lifestyle', 'published': True, 'id': post_id1}}
 
+def test_get_post_by_id_with_negative_number_id():
+    valid_token = test_user_login()
+    response1 = client.post("/linkedinposts", headers={"Authorization": f"Bearer {valid_token}"}, json=post_example)
+    assert response1.status_code == 201
+    post_id1 = response1.json()['data']['id']
+    assert response1.json() == {'data': {"title": "Vacation on the beach", "content": "I just got back from vacation and I'm so stressed.", "category": "Lifestyle", "published": True, "id": post_id1}}
+    response2 = client.post("/linkedinposts", headers={"Authorization": f"Bearer {valid_token}"}, json=post_example2)
+    assert response2.status_code == 201
+    response3 = client.get("/linkedinposts/-711", headers={"Authorization": f"Bearer {valid_token}"})
+    assert response3.status_code == 422
+    assert response3.json()['detail'] == 'ID -711 is invalid. ID must be a number greater than -1.'
+
 def test_get_post_by_id_with_empty_linkedinposts_list():
     valid_token = test_user_login()
     response = client.get("/linkedinposts/1", headers={"Authorization": f"Bearer {valid_token}"})
