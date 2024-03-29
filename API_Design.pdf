@@ -124,10 +124,6 @@ Expected Response Format:
 For successful requests, the API returns a JSON response with appropriate status codes and data.
 For error cases, the API returns a JSON response with an appropriate error message and status code.
 
-Authorization:
-
-The API currently does not require authorization for any endpoints. All endpoints are publicly accessible.
-
 Rate Limiting:
 
 The API currently does not have rate limiting implemented. Clients can make requests to the API without any restrictions.
