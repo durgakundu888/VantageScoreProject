@@ -6,7 +6,36 @@ Base URL:
 
 http://127.0.0.1:8000
 
+Resource Attributes:
+
+LinkedInPost:
+title (str): The title of the LinkedIn post.
+content (str): The content of the LinkedIn post.
+category (str): The category of the LinkedIn post.
+published (bool, default True): Indicates if the post is published.
+
+User:
+fullname (str): The full name of the user
+email (EmailStr): The email of the user
+password (str): The password of the user
+
+UserLogin:
+email (EmailStr): The email of the user
+password (str): The password of the user
+
 Endpoints:
+
+POST /user/signup: Signup new user
+Parameters:
+user (User): The details of the new user to signup.
+Returns:
+access_token (json): The bearer token for authorization
+
+POST /user/login: Login and authenticate user
+Parameters:
+user (UserLogin): The details of the user to login.
+Returns:
+access_token (json): The bearer token for authorization
 
 Get All Posts
 URL: /linkedinposts

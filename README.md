@@ -7,8 +7,22 @@ Install Dependencies:
 Navigate to the project directory and install the required dependencies using the following command:
 
 pip install fastapi uvicorn pydantic
+pip install 'pydantic[email]'
+pip install python-decouple  
+pip install PyJWT 
 
 Running the API:
+
+ENV file: Create a .env file where you should initialize your secret key and algorithm variable. 
+Generate your secret key in your terminal with the following commands:
+
+import secrets
+secrets.token_hex(16)
+
+Then, set the result value to the secret key in your .env file. Set the algorithm key to value HS256. For example:
+
+secret = f12c12c676726cbb8ad1d784a2bd3bd1
+algorithm = HS256
 
 Development Server: You can run the API using the development server provided by FastAPI with the following command:
 
@@ -32,7 +46,28 @@ content (str): The content of the LinkedIn post.
 category (str): The category of the LinkedIn post.
 published (bool, default True): Indicates if the post is published.
 
+User:
+fullname (str): The full name of the user
+email (EmailStr): The email of the user
+password (str): The password of the user
+
+UserLogin:
+email (EmailStr): The email of the user
+password (str): The password of the user
+
 API Endpoints:
+
+POST /user/signup: Signup new user
+Parameters:
+user (User): The details of the new user to signup.
+Returns:
+access_token (json): The bearer token for authorization
+
+POST /user/login: Login and authenticate user
+Parameters:
+user (UserLogin): The details of the user to login.
+Returns:
+access_token (json): The bearer token for authorization
 
 GET /linkedinposts: Retrieve all LinkedIn posts with pagination.
 Parameters:

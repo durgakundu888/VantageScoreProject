@@ -1,6 +1,9 @@
-from fastapi import FastAPI, HTTPException, status
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException, status, Depends, Body
+from pydantic import BaseModel, Field, EmailStr
 from random import randrange
+from jwt_handler import signJWT
+from jwt_bearer import jwtBearer
+
 import math
 
 app = FastAPI()
@@ -20,11 +23,22 @@ class LinkedInPost(BaseModel):
     category: str
     published: bool = True
 
+class User(BaseModel):
+    fullname: str = Field(default=None)
+    email: EmailStr = Field(default=None)
+    password: str = Field(default=None)
+
+class UserLogin(BaseModel):
+    email: EmailStr = Field(default=None)
+    password: str = Field(default=None)
+
 # Sample initial data
 linkedin_posts = [
     {"title": "New Job Post", "content": "I got a new job", "id": 1},
     {"title": "Open To Work Post", "content": "I am available on the job market", "id": 2}
 ]
+
+users = []
 
 # Utility functions
 def find_linkedin_post(post_id):
@@ -42,8 +56,28 @@ def paginate_posts(page: int = 1, page_size: int = 10):
     end_index = start_index + page_size
     return linkedin_posts[start_index:end_index]
 
+@app.post("/user/signup", tags=["user"])
+def user_signup(user : User = Body(default=None)):
+    users.append(user)
+    return signJWT(user.email)
+
+def check_user(data: UserLogin):
+    for user in users:
+        if user.email == data.email and user.password == data.password:
+            return True
+        return False
+
+@app.post("/user/login", tags=["user"])
+def user_login(user: UserLogin = Body(default=None)):
+    if check_user(user):
+        return signJWT(user.email)
+    else:
+        return {
+            "error": "Invalid login details!"
+        }
+
 # Get all posts with pagination
-@app.get("/linkedinposts", status_code=status.HTTP_200_OK)
+@app.get("/linkedinposts", dependencies=[Depends(jwtBearer())], tags=["posts"], status_code=status.HTTP_200_OK)
 def get_all_posts(page: int = 1, page_size: int = 10):
     """
     Retrieve all LinkedIn posts with pagination.
@@ -73,7 +107,7 @@ def get_all_posts(page: int = 1, page_size: int = 10):
     return {"data": paginated_posts}
 
 # Get the latest post
-@app.get("/linkedinposts/latest", status_code=status.HTTP_200_OK)
+@app.get("/linkedinposts/latest", dependencies=[Depends(jwtBearer())], tags=["posts"], status_code=status.HTTP_200_OK)
 def get_latest_post():
     """
     Retrieve the latest LinkedIn post.
@@ -87,7 +121,7 @@ def get_latest_post():
     return {"post_detail": post}
 
 # Get post by ID
-@app.get("/linkedinposts/{id}", status_code=status.HTTP_200_OK)
+@app.get("/linkedinposts/{id}", dependencies=[Depends(jwtBearer())], tags=["posts"], status_code=status.HTTP_200_OK)
 def get_post_by_id(id: int):
     """
     Retrieve a LinkedIn post by its ID.
@@ -108,7 +142,7 @@ def get_post_by_id(id: int):
     return {"post_detail": post}
 
 # Create a new post
-@app.post("/linkedinposts", status_code=status.HTTP_201_CREATED)
+@app.post("/linkedinposts", dependencies=[Depends(jwtBearer())], tags=["posts"], status_code=status.HTTP_201_CREATED)
 def create_post(post: LinkedInPost):
     """
     Create a new LinkedIn post.
@@ -125,7 +159,7 @@ def create_post(post: LinkedInPost):
     return {"data": post_dict}
 
 # Update a post by ID
-@app.put("/linkedinposts/{id}", status_code=status.HTTP_200_OK)
+@app.put("/linkedinposts/{id}", dependencies=[Depends(jwtBearer())], tags=["posts"], status_code=status.HTTP_200_OK)
 def update_post_by_id(id: int, post: LinkedInPost):
     """
     Update a LinkedIn post by its ID.
@@ -149,7 +183,7 @@ def update_post_by_id(id: int, post: LinkedInPost):
     return {"message": f"Post with ID {id} successfully updated", "post_details": post_dict}
 
 # Update all posts
-@app.put("/linkedinposts", status_code=status.HTTP_200_OK)
+@app.put("/linkedinposts", dependencies=[Depends(jwtBearer())], tags=["posts"], status_code=status.HTTP_200_OK)
 def update_all_posts(post: LinkedInPost):
     """
     Update all LinkedIn posts with the same details.
@@ -172,7 +206,7 @@ def update_all_posts(post: LinkedInPost):
     return {"message": "All posts successfully updated", "Updated Posts": linkedin_posts}
 
 # Delete a post by ID
-@app.delete("/linkedinposts/{id}", status_code=status.HTTP_200_OK)
+@app.delete("/linkedinposts/{id}", dependencies=[Depends(jwtBearer())], tags=["posts"], status_code=status.HTTP_200_OK)
 def delete_post(id: int):
     """
     Delete a LinkedIn post by its ID.
@@ -192,7 +226,7 @@ def delete_post(id: int):
     return {"message": f"Post with ID {id} successfully deleted"}
 
 # Delete all posts
-@app.delete("/linkedinposts", status_code=status.HTTP_200_OK)
+@app.delete("/linkedinposts", dependencies=[Depends(jwtBearer())], tags=["posts"], status_code=status.HTTP_200_OK)
 def delete_all_posts():
     """
     Delete all LinkedIn posts.
